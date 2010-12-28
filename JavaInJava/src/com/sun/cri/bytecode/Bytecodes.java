@@ -675,18 +675,6 @@ public class Bytecodes {
         public static final int ABOVE_EQUAL   = 2;
         public static final int BELOW_THAN    = 3;
         public static final int BELOW_EQUAL   = 4;
-
-        @INTRINSIC(UCMP | (ABOVE_EQUAL << 8))
-        public static native boolean aboveOrEqual(int x, int y);
-
-        @INTRINSIC(UCMP | (BELOW_EQUAL << 8))
-        public static native boolean belowOrEqual(int x, int y);
-
-        @INTRINSIC(UCMP | (ABOVE_THAN << 8))
-        public static native boolean aboveThan(int x, int y);
-
-        @INTRINSIC(UCMP | (BELOW_THAN << 8))
-        public static native boolean belowThan(int x, int y);
     }
 
     /**
