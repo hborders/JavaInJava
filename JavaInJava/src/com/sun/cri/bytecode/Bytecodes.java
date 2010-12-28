@@ -1485,12 +1485,6 @@ public class Bytecodes {
         }
         return nameOf(op);
     }
-
-    /**
-     * Inserts machine code to generate a breakpoint trap.
-     */
-    @INTRINSIC(BREAKPOINT_TRAP)
-    public static native void breakpointTrap();
     
     /**
      * Attempts to fold a binary operation on two constant integer inputs.
