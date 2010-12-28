@@ -666,6 +666,16 @@ public class Bytecodes {
          */
         public static final int J2N = 3;
     }
+    
+    /**
+     * Constants and {@link INTRINSIC} definitions for unsigned comparisons.
+     */
+    public static class UnsignedComparisons {
+        public static final int ABOVE_THAN    = 1;
+        public static final int ABOVE_EQUAL   = 2;
+        public static final int BELOW_THAN    = 3;
+        public static final int BELOW_EQUAL   = 4;
+    }
 
     /**
      * Constants for memory barriers.
