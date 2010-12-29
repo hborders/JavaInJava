@@ -47,73 +47,30 @@ public final class WordArray {
     private WordArray() {
     }
 
-    /**
-     * Replaces all {@code null} entries in a given word array with the appropriately typed boxed zero value.
-     */
-    @HOSTED_ONLY
-    private static void replaceNullWithZero(Word[] array) {
-        final Word zero = Word.zero();
-        for (int i = 0; i != array.length; ++i) {
-            if (array[i] == null) {
-                array[i] = zero;
-            }
-        }
-    }
-
     public static void fill(Word[] array, Word value) {
         for (int i = 0; i < array.length; i++) {
             uncheckedSet(array, i, value);
         }
     }
 
-    // Substituted by uncheckedGet_()
-    public static Word uncheckedGet(Word[] array, int index) {
-        if (array[index] == null) {
-            replaceNullWithZero(array);
-        }
-        return array[index];
-    }
-
-    @LOCAL_SUBSTITUTION
     @INLINE
-    private static Word uncheckedGet_(Word[] array, int index) {
+    public static Word uncheckedGet(Word[] array, int index) {
         return ArrayAccess.getWord(array, index);
     }
 
-    // Substituted by get_()
-    public static Word get(Word[] array, int index) {
-        if (array[index] == null) {
-            replaceNullWithZero(array);
-        }
-        return array[index];
-    }
-
-    @LOCAL_SUBSTITUTION
     @INLINE
-    private static Word get_(Word[] array, int index) {
+    public static Word get(Word[] array, int index) {
         ArrayAccess.checkIndex(array, index);
         return ArrayAccess.getWord(array, index);
     }
 
-    // Substituted by uncheckedSet_()
-    public static void uncheckedSet(Word[] array, int index, Word value) {
-        array[index] = value;
-    }
-
-    @LOCAL_SUBSTITUTION
     @INLINE
-    private static void uncheckedSet_(Word[] array, int index, Word value) {
+    public static void uncheckedSet(Word[] array, int index, Word value) {
         ArrayAccess.setWord(array, index, value);
     }
 
-    // Substituted by set_()
-    public static void set(Word[] array, int index, Word value) {
-        array[index] = value;
-    }
-
-    @LOCAL_SUBSTITUTION
     @INLINE
-    private static void set_(Word[] array, int index, Word value) {
+    public static void set(Word[] array, int index, Word value) {
         ArrayAccess.checkIndex(array, index);
         ArrayAccess.setWord(array, index, value);
     }
