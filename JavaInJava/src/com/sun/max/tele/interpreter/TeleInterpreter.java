@@ -306,47 +306,6 @@ public final class TeleInterpreter extends IrInterpreter<ActorIrMethod> {
         return machine.readByte() & 0xff;
     }
 
-    private void pointerLoad(Kind kind, boolean intOffset) throws TeleInterpreterException {
-        Offset off = intOffset ? Offset.fromInt(pop().asInt()) : pop().asWord().asOffset();
-        Pointer ptr = pop().asWord().asPointer();
-        DataAccess dataAccess = teleVM.teleProcess().dataAccess();
-        switch (kind.asEnum) {
-            // Checkstyle: stop
-            case BYTE:      push(IntValue.from(dataAccess.readByte(ptr, off))); break;
-            case CHAR:      push(IntValue.from(dataAccess.readChar(ptr, off))); break;
-            case SHORT:     push(IntValue.from(dataAccess.readShort(ptr, off))); break;
-            case INT:       push(IntValue.from(dataAccess.readInt(ptr, off))); break;
-            case LONG:      push(LongValue.from(dataAccess.readLong(ptr, off))); break;
-            case FLOAT:     push(FloatValue.from(dataAccess.readFloat(ptr, off))); break;
-            case DOUBLE:    push(DoubleValue.from(dataAccess.readDouble(ptr, off))); break;
-            case WORD:      push(WordValue.from(dataAccess.readWord(ptr, off))); break;
-            case REFERENCE: push(machine.toReferenceValue(teleVM.wordToReference(dataAccess.readWord(ptr, off)))); break;
-            default:        machine.raiseException(new ClassFormatError("Invalid pointer load kind: " + kind));
-            // Checkstyle: resume
-        }
-    }
-
-    private void pointerGet(Kind kind) throws TeleInterpreterException {
-        int index = pop().asInt();
-        int disp = pop().asInt();
-        Pointer ptr = pop().asWord().asPointer();
-        DataAccess dataAccess = teleVM.teleProcess().dataAccess();
-        switch (kind.asEnum) {
-            // Checkstyle: stop
-            case BYTE:      push(IntValue.from(dataAccess.getByte(ptr, disp, index))); break;
-            case CHAR:      push(IntValue.from(dataAccess.getChar(ptr, disp, index))); break;
-            case SHORT:     push(IntValue.from(dataAccess.getShort(ptr, disp, index))); break;
-            case INT:       push(IntValue.from(dataAccess.getInt(ptr, disp, index))); break;
-            case LONG:      push(LongValue.from(dataAccess.getLong(ptr, disp, index))); break;
-            case FLOAT:     push(FloatValue.from(dataAccess.getFloat(ptr, disp, index))); break;
-            case DOUBLE:    push(DoubleValue.from(dataAccess.getDouble(ptr, disp, index))); break;
-            case WORD:      push(WordValue.from(dataAccess.getWord(ptr, disp, index))); break;
-            case REFERENCE: push(machine.toReferenceValue(teleVM.wordToReference(dataAccess.getWord(ptr, disp, index)))); break;
-            default:        machine.raiseException(new ClassFormatError("Invalid pointer load kind: " + kind));
-            // Checkstyle: resume
-        }
-    }
-
     private void arrayLoad(Kind kind) throws TeleInterpreterException {
         int index = machine.pop().asInt();
         Reference array = machine.pop().asReference();
@@ -463,10 +422,6 @@ public final class TeleInterpreter extends IrInterpreter<ActorIrMethod> {
             case ALOAD_1:
             case ALOAD_2:
             case ALOAD_3:            push(local(opcode - ALOAD_0)); break;
-            case WLOAD_0:
-            case WLOAD_1:
-            case WLOAD_2:
-            case WLOAD_3:            push(local(opcode - WLOAD_0)); break;
             case IALOAD:             arrayLoad(Kind.INT); break;
             case LALOAD:             arrayLoad(Kind.LONG); break;
             case FALOAD:             arrayLoad(Kind.FLOAT); break;
@@ -479,7 +434,6 @@ public final class TeleInterpreter extends IrInterpreter<ActorIrMethod> {
             case LSTORE:
             case FSTORE:
             case DSTORE:
-            case WSTORE:
             case ASTORE:             setLocal(isWide ? readU2() : readU1(), pop()); break;
             case ISTORE_0:
             case ISTORE_1:
@@ -501,10 +455,6 @@ public final class TeleInterpreter extends IrInterpreter<ActorIrMethod> {
             case ASTORE_1:
             case ASTORE_2:
             case ASTORE_3:           setLocal(opcode - ASTORE_0, pop()); break;
-            case WSTORE_0:
-            case WSTORE_1:
-            case WSTORE_2:
-            case WSTORE_3:           setLocal(opcode - WSTORE_0, pop()); break;
             case IASTORE:            arrayStore(Kind.INT); break;
             case LASTORE:            arrayStore(Kind.LONG); break;
             case FASTORE:            arrayStore(Kind.FLOAT); break;
@@ -656,34 +606,6 @@ public final class TeleInterpreter extends IrInterpreter<ActorIrMethod> {
             case LDIV:             { long v2 = popCheckZero().asLong(); push(LongValue.from(pop().asLong() / v2)); break; }
             case FDIV:             { float v2 = popCheckZero().asFloat(); push(FloatValue.from(pop().asFloat() / v2)); break; }
             case DDIV:             { double v2 = popCheckZero().asDouble(); push(DoubleValue.from(pop().asDouble() / v2)); break; }
-            case WDIV: {
-                machine.skipBytes(2);
-                Address v2 = popCheckZero().asWord().asAddress();
-                Address v1 = pop().asWord().asAddress();
-                push(WordValue.from(v1.dividedBy(v2)));
-                break;
-            }
-            case WDIVI: {
-                machine.skipBytes(2);
-                int v2 = popCheckZero().asInt();
-                Address v1 = pop().asWord().asAddress();
-                push(WordValue.from(v1.dividedBy(v2)));
-                break;
-            }
-            case WREM: {
-                machine.skipBytes(2);
-                Address v2 = popCheckZero().asWord().asAddress();
-                Address v1 = pop().asWord().asAddress();
-                push(WordValue.from(v1.remainder(v2)));
-                break;
-            }
-            case WREMI: {
-                machine.skipBytes(2);
-                int v2 = popCheckZero().asInt();
-                Address v1 = pop().asWord().asAddress();
-                push(IntValue.from(v1.remainder(v2)));
-                break;
-            }
 
             case IREM:             { int v2 = popCheckZero().asInt(); push(IntValue.from(pop().asInt() % v2)); break; }
             case LREM:             { long v2 = popCheckZero().asLong(); push(LongValue.from(pop().asLong() % v2)); break; }
@@ -964,7 +886,6 @@ public final class TeleInterpreter extends IrInterpreter<ActorIrMethod> {
             case LRETURN:
             case FRETURN:
             case DRETURN:
-            case WRETURN:
             case ARETURN: {
                 Value result = pop();
                 ExecutionFrame frame = machine.popFrame();
@@ -1250,118 +1171,6 @@ public final class TeleInterpreter extends IrInterpreter<ActorIrMethod> {
                 machine.jump(offset);
                 break;
 
-            case UNSAFE_CAST:            machine.skipBytes(2); break;
-            case WCONST_0:               machine.skipBytes(2); push(WordValue.ZERO); break;
-
-
-            case PCMPSWP:
-            case MEMBAR:
-            case PGET:
-            case PSET:
-            case PREAD:
-            case PWRITE: {
-                int operand = readU2();
-                opcode = opcode | operand << 8;
-                switch (opcode) {
-
-                    case PREAD_BYTE:             pointerLoad(Kind.BYTE, false); break;
-                    case PREAD_CHAR:             pointerLoad(Kind.CHAR, false); break;
-                    case PREAD_SHORT:            pointerLoad(Kind.SHORT, false); break;
-                    case PREAD_INT:              pointerLoad(Kind.INT, false); break;
-                    case PREAD_FLOAT:            pointerLoad(Kind.FLOAT, false); break;
-                    case PREAD_LONG:             pointerLoad(Kind.LONG, false); break;
-                    case PREAD_DOUBLE:           pointerLoad(Kind.DOUBLE, false); break;
-                    case PREAD_WORD:             pointerLoad(Kind.WORD, false); break;
-                    case PREAD_REFERENCE:        pointerLoad(Kind.REFERENCE, false); break;
-                    case PREAD_BYTE_I:           pointerLoad(Kind.BYTE, true); break;
-                    case PREAD_CHAR_I:           pointerLoad(Kind.CHAR, true); break;
-                    case PREAD_SHORT_I:          pointerLoad(Kind.SHORT, true); break;
-                    case PREAD_INT_I:            pointerLoad(Kind.INT, true); break;
-                    case PREAD_FLOAT_I:          pointerLoad(Kind.FLOAT, true); break;
-                    case PREAD_LONG_I:           pointerLoad(Kind.LONG, true); break;
-                    case PREAD_DOUBLE_I:         pointerLoad(Kind.DOUBLE, true); break;
-                    case PREAD_WORD_I:           pointerLoad(Kind.WORD, true); break;
-                    case PREAD_REFERENCE_I:      pointerLoad(Kind.REFERENCE, true); break;
-                    case PWRITE_BYTE:
-                    case PWRITE_SHORT:
-                    case PWRITE_INT:
-                    case PWRITE_FLOAT:
-                    case PWRITE_LONG:
-                    case PWRITE_DOUBLE:
-                    case PWRITE_WORD:
-                    case PWRITE_REFERENCE:
-                    case PWRITE_BYTE_I:
-                    case PWRITE_SHORT_I:
-                    case PWRITE_INT_I:
-                    case PWRITE_FLOAT_I:
-                    case PWRITE_LONG_I:
-                    case PWRITE_DOUBLE_I:
-                    case PWRITE_WORD_I:
-                    case PWRITE_REFERENCE_I:     throw FatalError.unexpected("Cannot interpret pointer writes remotely");
-                    case PGET_BYTE:              pointerGet(Kind.BYTE); break;
-                    case PGET_CHAR:              pointerGet(Kind.CHAR); break;
-                    case PGET_SHORT:             pointerGet(Kind.SHORT); break;
-                    case PGET_INT:               pointerGet(Kind.INT); break;
-                    case PGET_FLOAT:             pointerGet(Kind.FLOAT); break;
-                    case PGET_LONG:              pointerGet(Kind.LONG); break;
-                    case PGET_DOUBLE:            pointerGet(Kind.DOUBLE); break;
-                    case PGET_WORD:              pointerGet(Kind.WORD); break;
-                    case PGET_REFERENCE:         pointerGet(Kind.REFERENCE); break;
-                    case PSET_BYTE:
-                    case PSET_SHORT:
-                    case PSET_INT:
-                    case PSET_FLOAT:
-                    case PSET_LONG:
-                    case PSET_DOUBLE:
-                    case PSET_WORD:
-                    case PSET_REFERENCE:
-                    case PCMPSWP_INT:
-                    case PCMPSWP_WORD:
-                    case PCMPSWP_REFERENCE:
-                    case PCMPSWP_INT_I:
-                    case PCMPSWP_WORD_I:
-                    case PCMPSWP_REFERENCE_I:    throw FatalError.unexpected("Cannot interpret pointer writes remotely");
-                    default:                     machine.raiseException(new ClassFormatError("Unsupported bytecode: " + opcode + " [" + Bytecodes.nameOf(opcode) + "]"));
-                }
-                break;
-            }
-            case MOV_I2F:                machine.skipBytes(2); push(FloatValue.from(Float.intBitsToFloat(pop().asInt()))); break;
-            case MOV_F2I:                machine.skipBytes(2); push(IntValue.from(Float.floatToRawIntBits(pop().asFloat()))); break;
-            case MOV_L2D:                machine.skipBytes(2); push(DoubleValue.from(Double.longBitsToDouble(pop().asLong()))); break;
-            case MOV_D2L:                machine.skipBytes(2); push(LongValue.from(Double.doubleToRawLongBits(pop().asDouble()))); break;
-            case SAFEPOINT:              machine.skipBytes(2); break;
-            case PAUSE:                  machine.skipBytes(2); break;
-            case FLUSHW:                 machine.skipBytes(2); break;
-            case LSB:                    machine.skipBytes(2); push(minus1IfWordWidth(Long.numberOfTrailingZeros((pop().asLong())))); break;
-            case MSB:                    machine.skipBytes(2); push(minus1IfWordWidth(Long.numberOfLeadingZeros((pop().asLong())))); break;
-            case UWCMP: {
-                int operand = readU2();
-                Address value2 = pop().asWord().asAddress();
-                Address value1 = pop().asWord().asAddress();
-                switch (operand) {
-                    case ABOVE_EQUAL: push(value1.greaterEqual(value2) ? 1 : 0); break;
-                    case ABOVE_THAN:  push(value1.greaterThan(value2) ? 1 : 0); break;
-                    case BELOW_EQUAL: push(value1.lessEqual(value2) ? 1 : 0); break;
-                    case BELOW_THAN:  push(value1.lessThan(value2) ? 1 : 0); break;
-                    default:
-                        machine.raiseException(new ClassFormatError("Unsupported UWCMP operand: " + operand));
-                }
-                break;
-            }
-            case UCMP: {
-                int operand = readU2();
-                long value2 = pop().toLong() & 0xFFFFFFFFL;
-                long value1 = pop().toLong() & 0xFFFFFFFFL;
-                switch (operand) {
-                    case ABOVE_EQUAL: push(value1 >= value2 ? 1 : 0); break;
-                    case ABOVE_THAN:  push(value1 >  value2 ? 1 : 0); break;
-                    case BELOW_EQUAL: push(value1 <= value2 ? 1 : 0); break;
-                    case BELOW_THAN:  push(value1 <  value2 ? 1 : 0); break;
-                    default:
-                        machine.raiseException(new ClassFormatError("Unsupported UCMP operand: " + operand));
-                }
-                break;
-            }
             default:                     machine.raiseException(new ClassFormatError("Unsupported bytecode: " + opcode + " [" + Bytecodes.nameOf(opcode) + "]"));
             // Checkstyle: resume
         }
