@@ -21,7 +21,6 @@
 package com.sun.max.unsafe;
 
 import static com.sun.cri.bytecode.Bytecodes.*;
-import static com.sun.max.vm.MaxineVM.*;
 
 import com.sun.cri.bytecode.*;
 import com.sun.max.annotate.*;
@@ -29,63 +28,6 @@ import com.sun.max.asm.*;
 import com.sun.max.lang.*;
 import com.sun.max.lang.Bytes;
 import com.sun.max.platform.*;
-import com.sun.max.vm.compiler.builtin.PointerAtomicBuiltin.CompareAndSwapInt;
-import com.sun.max.vm.compiler.builtin.PointerAtomicBuiltin.CompareAndSwapIntAtIntOffset;
-import com.sun.max.vm.compiler.builtin.PointerAtomicBuiltin.CompareAndSwapReference;
-import com.sun.max.vm.compiler.builtin.PointerAtomicBuiltin.CompareAndSwapReferenceAtIntOffset;
-import com.sun.max.vm.compiler.builtin.PointerAtomicBuiltin.CompareAndSwapWord;
-import com.sun.max.vm.compiler.builtin.PointerAtomicBuiltin.CompareAndSwapWordAtIntOffset;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.GetByte;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.GetChar;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.GetDouble;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.GetFloat;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.GetInt;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.GetLong;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.GetReference;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.GetShort;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.GetWord;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.ReadByte;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.ReadByteAtIntOffset;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.ReadChar;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.ReadCharAtIntOffset;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.ReadDouble;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.ReadDoubleAtIntOffset;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.ReadFloat;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.ReadFloatAtIntOffset;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.ReadInt;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.ReadIntAtIntOffset;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.ReadLong;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.ReadLongAtIntOffset;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.ReadReference;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.ReadReferenceAtIntOffset;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.ReadShort;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.ReadShortAtIntOffset;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.ReadWord;
-import com.sun.max.vm.compiler.builtin.PointerLoadBuiltin.ReadWordAtIntOffset;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.SetByte;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.SetDouble;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.SetFloat;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.SetInt;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.SetLong;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.SetReference;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.SetShort;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.SetWord;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.WriteByte;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.WriteByteAtIntOffset;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.WriteDouble;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.WriteDoubleAtIntOffset;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.WriteFloat;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.WriteFloatAtIntOffset;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.WriteInt;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.WriteIntAtIntOffset;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.WriteLong;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.WriteLongAtIntOffset;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.WriteReference;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.WriteReferenceAtIntOffset;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.WriteShort;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.WriteShortAtIntOffset;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.WriteWord;
-import com.sun.max.vm.compiler.builtin.PointerStoreBuiltin.WriteWordAtIntOffset;
 import com.sun.max.vm.reference.*;
 import com.sun.max.vm.runtime.*;
 import com.sun.max.vm.type.*;
@@ -569,7 +511,7 @@ public abstract class Pointer extends Address implements Accessor {
 
     @INLINE
     public final Reference getReference(int displacement, int index) {
-        if (risc() || isHosted()) {
+        if (risc()) {
             return readReference(Offset.fromInt(index).times(Word.size()).plus(displacement));
         }
         return builtinGetReference(displacement, index);
