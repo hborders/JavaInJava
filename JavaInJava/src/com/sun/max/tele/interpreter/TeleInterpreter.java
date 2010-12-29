@@ -53,21 +53,15 @@ import com.sun.max.vm.value.*;
  * @author Athul Acharya
  * @author Doug Simon
  */
-public final class TeleInterpreter extends IrInterpreter<ActorIrMethod> {
+public final class TeleInterpreter {
 
     private final TeleVM teleVM;
 
     private Machine machine;
     private Value returnValue;
-    private int instructionsExecuted;
 
     public TeleInterpreter(TeleVM teleVM) {
         this.teleVM = teleVM;
-    }
-
-    @Override
-    public Value execute(IrMethod method, Value... arguments) throws InvocationTargetException {
-        return run(method.classMethodActor(), arguments);
     }
 
     /**
@@ -84,116 +78,6 @@ public final class TeleInterpreter extends IrInterpreter<ActorIrMethod> {
         return new TeleInterpreter(teleVM).run(classMethodActor, args);
     }
 
-    /**
-     * Creates an interpreter instance and uses it to execute a given method with the given arguments.
-     *
-     * @param teleVM the remote VM
-     * @param declaringClassName the name of the class that declares the method to be executed
-     * @param name the name of the method to be executed
-     * @param signature the signature of the method to be executed
-     * @param args the arguments to passed to the method for execution
-     * @return the result of the execution
-     * @throws TeleInterpreterException if an uncaught exception occurs during execution of the method
-     * @throws NoSuchMethodError if the specified method cannot be found
-     */
-    public static Value execute(TeleVM teleVM, String declaringClassName, String name, SignatureDescriptor signature, Value... args) throws TeleInterpreterException {
-        ClassActor classActor;
-        ClassMethodActor classMethodActor;
-
-        classActor = HostedBootClassLoader.HOSTED_BOOT_CLASS_LOADER.mustMakeClassActor(JavaTypeDescriptor.getDescriptorForJavaString(declaringClassName));
-        classMethodActor = classActor.findClassMethodActor(SymbolTable.makeSymbol(name), signature);
-
-        if (classMethodActor == null) {
-            throw new NoSuchMethodError(declaringClassName + "." + name + signature);
-        }
-
-        return execute(teleVM, classMethodActor, args);
-    }
-
-    /**
-     * Creates an interpreter instance and uses it to execute a given method with the given arguments.
-     *
-     * @param teleVM the remote VM
-     * @param declaringClass the class that declares the method to be executed
-     * @param name the name of the method to be executed
-     * @param signature the signature of the method to be executed
-     * @param args the arguments to passed to the method for execution
-     * @return the result of the execution
-     * @throws TeleInterpreterException if an uncaught exception occurs during execution of the method
-     */
-    public static Value execute(TeleVM teleVM, Class declaringClass, String name, SignatureDescriptor signature, Value... args) throws TeleInterpreterException {
-        ClassActor classActor;
-        ClassMethodActor classMethodActor;
-
-        classActor = HostedBootClassLoader.HOSTED_BOOT_CLASS_LOADER.mustMakeClassActor(JavaTypeDescriptor.forJavaClass(declaringClass));
-        classMethodActor = classActor.findClassMethodActor(SymbolTable.makeSymbol(name), signature);
-
-        if (classMethodActor == null) {
-            throw new NoSuchMethodError(declaringClass.getName() + "." + name + signature);
-        }
-
-        return execute(teleVM, classMethodActor, args);
-    }
-
-    /**
-     * A lazy constructed cache of mappings from opcode positions to disassembled bytecode instructions.
-     */
-    private Map<MethodActor, Map<Integer, String>> bytecodeTraces;
-
-    /**
-     * The last frame traced in {@link #traceExecution()}.
-     */
-    private ExecutionFrame lastTracedFrame;
-
-    /**
-     * Traces the current execution point.
-     */
-    private void traceExecution() {
-        if (Trace.hasLevel(2)) {
-            PrintStream stream = Trace.stream();
-            ExecutionFrame frame = machine.currentThread().frame();
-
-            int depth = frame.depth();
-            if (lastTracedFrame == null) {
-                stream.println("Interpreter: " + Strings.spaces(depth * 2) + "ENTERING: " + frame.method().format("%H.%n(%p)"));
-            } else if (lastTracedFrame != frame) {
-                int lastFrameDepth = lastTracedFrame.depth();
-                if (lastFrameDepth < depth) {
-                    stream.println("Interpreter: " + Strings.spaces(depth * 2) + "ENTERING: " + frame.method().format("%H.%n(%p)"));
-                } else {
-                    stream.println("Interpreter: " + Strings.spaces(lastFrameDepth * 2) + "EXITING: " + lastTracedFrame.method().format("%H.%n(%p)"));
-                }
-            }
-            if (Trace.hasLevel(3)) {
-                if (bytecodeTraces == null) {
-                    bytecodeTraces = new HashMap<MethodActor, Map<Integer, String>>();
-                }
-                Map<Integer, String> bcpToTrace = bytecodeTraces.get(machine.currentMethod());
-                if (bcpToTrace == null) {
-                    bcpToTrace = new HashMap<Integer, String>();
-                    bytecodeTraces.put(machine.currentMethod(), bcpToTrace);
-                    ConstantPool constantPool = frame.constantPool();
-                    BytecodeBlock bytecodeBlock = new BytecodeBlock(frame.code());
-                    String[] instructions = BytecodePrinter.toString(constantPool, bytecodeBlock, "", "\0", 0).split("\0");
-                    for (String instruction : instructions) {
-                        int colonIndex = instruction.indexOf(':');
-                        assert colonIndex != -1 : "instruction trace does not start with expected '<bcp>:': " + instruction;
-                        try {
-                            int bcp = Integer.parseInt(instruction.substring(0, colonIndex));
-                            bcpToTrace.put(bcp, instruction);
-                        } catch (NumberFormatException numberFormatException) {
-                            ProgramWarning.message("instruction trace does not start with expected '<bcp>:': " + instruction);
-                        }
-                    }
-                }
-
-                stream.println("Interpreter: " + Strings.spaces(depth * 2) + bcpToTrace.get(frame.currentOpcodePosition()));
-            }
-            lastTracedFrame = frame;
-            stream.flush();
-        }
-    }
-
     private Value run(ClassMethodActor classMethodActor, Value... arguments) throws TeleInterpreterException {
 
         machine = new Machine(teleVM);
@@ -208,12 +92,9 @@ public final class TeleInterpreter extends IrInterpreter<ActorIrMethod> {
 
         int opcode;
         MethodStatus status;
-        instructionsExecuted = 0;
 
         while (true) {
             opcode = machine.readOpcode();
-
-            traceExecution();
 
             try {
 
@@ -240,8 +121,6 @@ public final class TeleInterpreter extends IrInterpreter<ActorIrMethod> {
                 if (!handled) {
                     throw new TeleInterpreterException(throwable, machine);
                 }
-            } finally {
-                instructionsExecuted++;
             }
         }
 
