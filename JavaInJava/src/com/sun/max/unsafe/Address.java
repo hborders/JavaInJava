@@ -20,17 +20,11 @@
  */
 package com.sun.max.unsafe;
 
-import static com.sun.cri.bytecode.Bytecodes.*;
-import static com.sun.cri.bytecode.Bytecodes.UnsignedComparisons.*;
-import static com.sun.max.vm.MaxineVM.*;
-
 import java.math.*;
 
-import com.sun.cri.bytecode.*;
 import com.sun.max.annotate.*;
 import com.sun.max.lang.*;
 import com.sun.max.program.*;
-import com.sun.max.vm.compiler.builtin.*;
 
 /**
  * A machine word interpreted as a linear address.
@@ -219,42 +213,30 @@ public abstract class Address extends Word {
         return asOffset().times(factor).asAddress();
     }
 
-    @BUILTIN(value = AddressBuiltin.DividedByAddress.class)
-    @INTRINSIC(WDIV)
     protected abstract Address dividedByAddress(Address divisor);
 
     @INLINE(override = true)
-    @INTRINSIC(WDIV)
     public Address dividedBy(Address divisor) {
         return dividedByAddress(divisor);
     }
 
-    @BUILTIN(value = AddressBuiltin.DividedByInt.class)
-    @INTRINSIC(WDIVI)
     protected abstract Address dividedByInt(int divisor);
 
     @INLINE(override = true)
-    @INTRINSIC(WDIVI)
     public Address dividedBy(int divisor) {
         return dividedByInt(divisor);
     }
 
-    @BUILTIN(value = AddressBuiltin.RemainderByAddress.class)
-    @INTRINSIC(WREM)
     protected abstract Address remainderByAddress(Address divisor);
 
     @INLINE(override = true)
-    @INTRINSIC(WREM)
     public Address remainder(Address divisor) {
         return remainderByAddress(divisor);
     }
 
-    @BUILTIN(value = AddressBuiltin.RemainderByInt.class)
-    @INTRINSIC(WREMI)
     protected abstract int remainderByInt(int divisor);
 
     @INLINE(override = true)
-    @INTRINSIC(WREMI)
     public final int remainder(int divisor) {
         return remainderByInt(divisor);
     }
