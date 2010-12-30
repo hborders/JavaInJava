@@ -241,12 +241,4 @@ public abstract class Size extends Address {
     public final Size unsignedShiftedRight(int nBits) {
         return asAddress().unsignedShiftedRight(nBits).asSize();
     }
-
-    public static Size min(Size a, Size b) {
-        if (a.lessThan(b)) {
-            return a;
-        }
-        return b;
-    }
-
 }
