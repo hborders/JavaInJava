@@ -46,12 +46,12 @@ public abstract class Address extends Word {
 
     @INLINE
     public static Address zero() {
-        return isHosted() ? BoxedAddress.ZERO : fromInt(0);
+        return fromInt(0);
     }
 
     @INLINE
     public static Address max() {
-        return isHosted() ? BoxedAddress.MAX : fromLong(-1L);
+        return fromLong(-1L);
     }
 
     /**
@@ -63,11 +63,6 @@ public abstract class Address extends Word {
      */
     @INLINE
     public static Address fromUnsignedInt(int value) {
-        if (isHosted()) {
-            final long longValue = value;
-            final long n = longValue & 0xffffffffL;
-            return BoxedAddress.from(n);
-        }
         if (Word.width() == 64) {
             final long longValue = value;
             final long n = longValue & 0xffffffffL;
@@ -85,10 +80,6 @@ public abstract class Address extends Word {
      */
     @INLINE
     public static Address fromInt(int value) {
-        if (isHosted()) {
-            final long n = value;
-            return BoxedAddress.from(n);
-        }
         if (Word.width() == 64) {
             final long n = value;
             return UnsafeCast.asAddress(n);
@@ -98,9 +89,6 @@ public abstract class Address extends Word {
 
     @INLINE
     public static Address fromLong(long value) {
-        if (isHosted()) {
-            return BoxedAddress.from(value);
-        }
         if (Word.width() == 64) {
             return UnsafeCast.asAddress(value);
         }
@@ -161,10 +149,6 @@ public abstract class Address extends Word {
 
     @INLINE
     public final int toInt() {
-        if (isHosted()) {
-            final Boxed box = (Boxed) this;
-            return (int) box.value();
-        }
         if (Word.width() == 64) {
             final long n = UnsafeCast.asLong(this);
             return (int) n;
@@ -174,85 +158,15 @@ public abstract class Address extends Word {
 
     @INLINE
     public final long toLong() {
-        if (isHosted()) {
-            final Boxed box = (Boxed) this;
-            return box.value();
-        }
         if (Word.width() == 64) {
             return UnsafeCast.asLong(this);
         }
         return 0xffffffffL & UnsafeCast.asInt(this);
     }
 
-    public final int compareTo(Address other) {
-        if (greaterThan(other)) {
-            return 1;
-        }
-        if (lessThan(other)) {
-            return -1;
-        }
-        return 0;
-    }
-
     @INLINE
     public final boolean equals(int other) {
-        if (isHosted()) {
-            return toLong() == other;
-        }
         return fromInt(other) == this;
-    }
-
-    @BUILTIN(value = AddressBuiltin.GreaterThan.class)
-    @INTRINSIC(UWCMP | (ABOVE_THAN << 8))
-    public final boolean greaterThan(Address other) {
-        assert isHosted();
-        final long a = toLong();
-        final long b = other.toLong();
-        if (a < 0 == b < 0) {
-            return a > b;
-        }
-        return a < b;
-    }
-
-    @INLINE(override = true)
-    public final boolean greaterThan(int other) {
-        return greaterThan(fromInt(other));
-    }
-
-    @BUILTIN(value = AddressBuiltin.GreaterEqual.class)
-    @INTRINSIC(UWCMP | (ABOVE_EQUAL << 8))
-    public final boolean greaterEqual(Address other) {
-        assert isHosted();
-        return !other.greaterThan(this);
-    }
-
-    @INLINE(override = true)
-    public final boolean greaterEqual(int other) {
-        return greaterEqual(fromInt(other));
-    }
-
-    @BUILTIN(value = AddressBuiltin.LessThan.class)
-    @INTRINSIC(UWCMP | (BELOW_THAN << 8))
-    public final boolean lessThan(Address other) {
-        assert isHosted();
-        return other.greaterThan(this);
-    }
-
-    @INLINE(override = true)
-    public final boolean lessThan(int other) {
-        return lessThan(fromInt(other));
-    }
-
-    @BUILTIN(value = AddressBuiltin.LessEqual.class)
-    @INTRINSIC(UWCMP | (BELOW_EQUAL << 8))
-    public final boolean lessEqual(Address other) {
-        assert isHosted();
-        return !greaterThan(other);
-    }
-
-    @INLINE(override = true)
-    public final boolean lessEqual(int other) {
-        return lessEqual(fromInt(other));
     }
 
     @INLINE(override = true)
