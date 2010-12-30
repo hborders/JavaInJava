@@ -20,8 +20,6 @@
  */
 package com.sun.max.unsafe;
 
-import static com.sun.max.vm.MaxineVM.*;
-
 import com.sun.max.annotate.*;
 import com.sun.max.lang.*;
 import com.sun.max.program.*;
@@ -39,7 +37,7 @@ public abstract class Offset extends Word {
 
     @INLINE
     public static Offset zero() {
-        return isHosted() ? BoxedOffset.ZERO : fromInt(0);
+        return fromInt(0);
     }
 
     @INLINE
@@ -49,9 +47,6 @@ public abstract class Offset extends Word {
 
     @INLINE
     public static Offset fromInt(int value) {
-        if (isHosted()) {
-            return BoxedOffset.from(value);
-        }
         if (Word.width() == 64) {
             final long n = value;
             return UnsafeCast.asOffset(n);
@@ -61,9 +56,6 @@ public abstract class Offset extends Word {
 
     @INLINE
     public static Offset fromLong(long value) {
-        if (isHosted()) {
-            return BoxedOffset.from(value);
-        }
         if (Word.width() == 64) {
             return UnsafeCast.asOffset(value);
         }
@@ -78,10 +70,6 @@ public abstract class Offset extends Word {
 
     @INLINE
     public final int toInt() {
-        if (isHosted()) {
-            final BoxedOffset box = (BoxedOffset) this;
-            return (int) box.value();
-        }
         if (Word.width() == 64) {
             final long n = UnsafeCast.asLong(this);
             return (int) n;
@@ -91,10 +79,6 @@ public abstract class Offset extends Word {
 
     @INLINE
     public final long toLong() {
-        if (isHosted()) {
-            final BoxedOffset box = (BoxedOffset) this;
-            return box.value();
-        }
         if (Word.width() == 64) {
             return UnsafeCast.asLong(this);
         }
@@ -113,9 +97,6 @@ public abstract class Offset extends Word {
 
     @INLINE
     public final boolean equals(int other) {
-        if (isHosted()) {
-            return toLong() == other;
-        }
         return fromInt(other) == this;
     }
 
