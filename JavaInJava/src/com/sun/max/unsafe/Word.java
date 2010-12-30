@@ -92,44 +92,20 @@ public abstract class Word {
         return widthValue().numberOfBytes;
     }
 
-    public final JniHandle asJniHandle() {
-        if (this instanceof BoxedJniHandle) {
-            return (BoxedJniHandle) this;
-        }
-        final Boxed box = (Boxed) this;
-        return BoxedJniHandle.from(box.value());
-    }
-
     public final Address asAddress() {
-        if (this instanceof BoxedAddress) {
-            return (BoxedAddress) this;
-        }
-        final Boxed box = (Boxed) this;
-        return BoxedAddress.from(box.value());
+        throw new UnsupportedOperationException("later");
     }
 
     public final Offset asOffset() {
-        if (this instanceof BoxedOffset) {
-            return (BoxedOffset) this;
-        }
-        final Boxed box = (Boxed) this;
-        return BoxedOffset.from(box.value());
+    	throw new UnsupportedOperationException("later");
     }
 
     public final Size asSize() {
-        if (this instanceof BoxedSize) {
-            return (BoxedSize) this;
-        }
-        final Boxed box = (Boxed) this;
-        return BoxedSize.from(box.value());
+        throw new UnsupportedOperationException("later");
     }
 
     public final Pointer asPointer() {
-        if (this instanceof BoxedPointer) {
-            return (BoxedPointer) this;
-        }
-        final Boxed box = (Boxed) this;
-        return BoxedPointer.from(box.value());
+    	throw new UnsupportedOperationException("later");
     }
 
     /**
