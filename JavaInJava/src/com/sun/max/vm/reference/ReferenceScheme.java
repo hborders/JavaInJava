@@ -20,7 +20,6 @@
  */
 package com.sun.max.vm.reference;
 
-import com.sun.max.annotate.*;
 import com.sun.max.unsafe.*;
 import com.sun.max.vm.*;
 
@@ -169,20 +168,4 @@ public interface ReferenceScheme extends VMScheme {
     Reference compareAndSwapReference(Reference reference, int offset, Reference expectedValue, Reference newValue);
 
     void copyElements(int displacement, Reference src, int srcIndex, Object dst, int dstIndex, int length);
-
-    /**
-     * Gets the byte pattern for a reference to be written into the boot image.
-     *
-     * @param origin the origin of the reference to be written
-     */
-    @HOSTED_ONLY
-    byte[] asBytes(Pointer origin);
-
-    /**
-     * Gets the byte pattern for a null reference to be written into the boot image.
-     */
-    @HOSTED_ONLY
-    byte[] nullAsBytes();
-
-
 }
