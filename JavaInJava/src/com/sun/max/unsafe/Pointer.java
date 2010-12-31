@@ -262,26 +262,15 @@ public abstract class Pointer extends Address implements Accessor {
         return asAddress().unsignedShiftedRight(nBits).asPointer();
     }
 
-    @UNSAFE
-    @FOLD
-    private static boolean risc() {
-        return Platform.platform().isa.category == ISA.Category.RISC;
-    }
-
     public byte readByte(int offset) {
         return readByte(Offset.fromInt(offset));
     }
 
     public abstract byte readByte(Offset offset);
 
-    private native byte builtinGetByte(int displacement, int index);
-
     @INLINE
     public final byte getByte(int displacement, int index) {
-        if (risc()) {
-            return readByte(Offset.fromInt(index).plus(displacement));
-        }
-        return builtinGetByte(displacement, index);
+       throw new UnsupportedOperationException("later");
     }
 
     @INLINE
@@ -325,14 +314,9 @@ public abstract class Pointer extends Address implements Accessor {
 
     public abstract short readShort(Offset offset);
 
-    private native short builtinGetShort(int displacement, int index);
-
     @INLINE
     public final short getShort(int displacement, int index) {
-        if (risc()) {
-            return readShort(Offset.fromInt(index).times(Shorts.SIZE).plus(displacement));
-        }
-        return builtinGetShort(displacement, index);
+    	throw new UnsupportedOperationException("later");
     }
 
     @INLINE
@@ -351,14 +335,9 @@ public abstract class Pointer extends Address implements Accessor {
 
     public abstract char readChar(Offset offset);
 
-    private native char builtinGetChar(int displacement, int index);
-
     @INLINE
     public final char getChar(int displacement, int index) {
-        if (risc()) {
-            return readChar(Offset.fromInt(index).times(Chars.SIZE).plus(displacement));
-        }
-        return builtinGetChar(displacement, index);
+    	throw new UnsupportedOperationException("later");
     }
 
     @INLINE
@@ -377,14 +356,9 @@ public abstract class Pointer extends Address implements Accessor {
 
     public abstract int readInt(Offset offset);
 
-    private native int builtinGetInt(int displacement, int index);
-
     @INLINE
     public final int getInt(int displacement, int index) {
-        if (risc()) {
-            return readInt(Offset.fromInt(index).times(Ints.SIZE).plus(displacement));
-        }
-        return builtinGetInt(displacement, index);
+    	throw new UnsupportedOperationException("later");
     }
 
     @INLINE
@@ -403,14 +377,9 @@ public abstract class Pointer extends Address implements Accessor {
 
     public abstract float readFloat(Offset offset);
 
-    private native float builtinGetFloat(int displacement, int index);
-
     @INLINE
     public final float getFloat(int displacement, int index) {
-        if (risc()) {
-            return readFloat(Offset.fromInt(index).times(FLOAT_SIZE).plus(displacement));
-        }
-        return builtinGetFloat(displacement, index);
+    	throw new UnsupportedOperationException("later");
     }
 
     @INLINE
@@ -429,14 +398,9 @@ public abstract class Pointer extends Address implements Accessor {
 
     public abstract long readLong(Offset offset);
 
-    private native long builtinGetLong(int displacement, int index);
-
     @INLINE
     public final long getLong(int displacement, int index) {
-        if (risc()) {
-            return readLong(Offset.fromInt(index).times(Longs.SIZE).plus(displacement));
-        }
-        return builtinGetLong(displacement, index);
+    	throw new UnsupportedOperationException("later");
     }
 
     @INLINE
@@ -455,14 +419,9 @@ public abstract class Pointer extends Address implements Accessor {
 
     public abstract double readDouble(Offset offset);
 
-    private native double builtinGetDouble(int displacement, int index);
-
     @INLINE
     public final double getDouble(int displacement, int index) {
-        if (risc()) {
-            return readDouble(Offset.fromInt(index).times(DOUBLE_SIZE).plus(displacement));
-        }
-        return builtinGetDouble(displacement, index);
+    	throw new UnsupportedOperationException("later");
     }
 
     @INLINE
@@ -481,14 +440,9 @@ public abstract class Pointer extends Address implements Accessor {
 
     public abstract Word readWord(Offset offset);
 
-    private native Word builtinGetWord(int displacement, int index);
-
     @INLINE
     public final Word getWord(int displacement, int index) {
-        if (risc()) {
-            return readWord(Offset.fromInt(index).times(Word.size()).plus(displacement));
-        }
-        return builtinGetWord(displacement, index);
+    	throw new UnsupportedOperationException("later");
     }
 
     @INLINE
@@ -507,14 +461,9 @@ public abstract class Pointer extends Address implements Accessor {
 
     public abstract Reference readReference(Offset offset);
 
-    private native Reference builtinGetReference(int displacement, int index);
-
     @INLINE
     public final Reference getReference(int displacement, int index) {
-        if (risc()) {
-            return readReference(Offset.fromInt(index).times(Word.size()).plus(displacement));
-        }
-        return builtinGetReference(displacement, index);
+    	throw new UnsupportedOperationException("later");
     }
 
     @INLINE
@@ -533,15 +482,9 @@ public abstract class Pointer extends Address implements Accessor {
 
     public abstract void writeByte(Offset offset, byte value);
 
-    private native void builtinSetByte(int displacement, int index, byte value);
-
     @INLINE
     public final void setByte(int displacement, int index, byte value) {
-        if (risc()) {
-            writeByte(Offset.fromInt(index).plus(displacement), value);
-        } else {
-            builtinSetByte(displacement, index, value);
-        }
+    	throw new UnsupportedOperationException("later");
     }
 
     @INLINE
@@ -585,15 +528,9 @@ public abstract class Pointer extends Address implements Accessor {
 
     public abstract void writeShort(Offset offset, short value);
 
-    private native void builtinSetShort(int displacement, int index, short value);
-
     @INLINE
     public final void setShort(int displacement, int index, short value) {
-        if (risc()) {
-            writeShort(Offset.fromInt(index).times(Shorts.SIZE).plus(displacement), value);
-        } else {
-            builtinSetShort(displacement, index, value);
-        }
+    	throw new UnsupportedOperationException("later");
     }
 
     @INLINE
@@ -637,15 +574,9 @@ public abstract class Pointer extends Address implements Accessor {
 
     public abstract void writeInt(Offset offset, int value);
 
-    private native void builtinSetInt(int displacement, int index, int value);
-
     @INLINE
     public final void setInt(int displacement, int index, int value) {
-        if (risc()) {
-            writeInt(Offset.fromInt(index).times(Ints.SIZE).plus(displacement), value);
-        } else {
-            builtinSetInt(displacement, index, value);
-        }
+    	throw new UnsupportedOperationException("later");
     }
 
     @INLINE
@@ -664,15 +595,9 @@ public abstract class Pointer extends Address implements Accessor {
 
     public abstract void writeFloat(Offset offset, float value);
 
-    private native void builtinSetFloat(int displacement, int index, float value);
-
     @INLINE
     public final void setFloat(int displacement, int index, float value) {
-        if (risc()) {
-            writeFloat(Offset.fromInt(index).times(FLOAT_SIZE).plus(displacement), value);
-        } else {
-            builtinSetFloat(displacement, index, value);
-        }
+    	throw new UnsupportedOperationException("later");
     }
 
     @INLINE
@@ -691,15 +616,9 @@ public abstract class Pointer extends Address implements Accessor {
 
     public abstract void writeLong(Offset offset, long value);
 
-    private native void builtinSetLong(int displacement, int index, long value);
-
     @INLINE
     public final void setLong(int displacement, int index, long value) {
-        if (risc()) {
-            writeLong(Offset.fromInt(index).times(Longs.SIZE).plus(displacement), value);
-        } else {
-            builtinSetLong(displacement, index, value);
-        }
+    	throw new UnsupportedOperationException("later");
     }
 
     @INLINE
@@ -718,15 +637,9 @@ public abstract class Pointer extends Address implements Accessor {
 
     public abstract void writeDouble(Offset offset, double value);
 
-    private native void builtinSetDouble(int displacement, int index, double value);
-
     @INLINE
     public final void setDouble(int displacement, int index, double value) {
-        if (risc()) {
-            writeDouble(Offset.fromInt(index).times(DOUBLE_SIZE).plus(displacement), value);
-        } else {
-            builtinSetDouble(displacement, index, value);
-        }
+    	throw new UnsupportedOperationException("later");
     }
 
     @INLINE
@@ -745,15 +658,9 @@ public abstract class Pointer extends Address implements Accessor {
 
     public abstract void writeWord(Offset offset, Word value);
 
-    private native void builtinSetWord(int displacement, int index, Word value);
-
     @INLINE
     public final void setWord(int displacement, int index, Word value) {
-        if (risc()) {
-            writeWord(Offset.fromInt(index).times(Word.size()).plus(displacement), value);
-        } else {
-            builtinSetWord(displacement, index, value);
-        }
+    	throw new UnsupportedOperationException("later");
     }
 
     @INLINE
@@ -772,15 +679,9 @@ public abstract class Pointer extends Address implements Accessor {
 
     public abstract void writeReference(Offset offset, Reference value);
 
-    private native void builtinSetReference(int displacement, int index, Reference value);
-
     @INLINE
     public final void setReference(int displacement, int index, Reference value) {
-        if (risc()) {
-            writeReference(Offset.fromInt(index).times(Word.size()).plus(displacement), value);
-        } else {
-            builtinSetReference(displacement, index, value);
-        }
+    	throw new UnsupportedOperationException("later");
     }
 
     @INLINE
@@ -796,32 +697,44 @@ public abstract class Pointer extends Address implements Accessor {
     /**
      * @see Accessor#compareAndSwapInt(Offset, int, int)
      */
-    public native int compareAndSwapInt(int offset, int expectedValue, int newValue);
+    public int compareAndSwapInt(int offset, int expectedValue, int newValue) {
+    	throw new UnsupportedOperationException("later");
+    }
 
     /**
      * @see Accessor#compareAndSwapInt(Offset, int, int)
      */
-    public native int compareAndSwapInt(Offset offset, int expectedValue, int newValue);
+    public int compareAndSwapInt(Offset offset, int expectedValue, int newValue) {
+    	throw new UnsupportedOperationException("later");
+    }
 
     /**
      * @see Accessor#compareAndSwapInt(Offset, int, int)
      */
-    public native Word compareAndSwapWord(int offset, Word expectedValue, Word newValue);
+    public Word compareAndSwapWord(int offset, Word expectedValue, Word newValue) {
+    	throw new UnsupportedOperationException("later");
+    }
 
     /**
      * @see Accessor#compareAndSwapInt(Offset, int, int)
      */
-    public native Word compareAndSwapWord(Offset offset, Word expectedValue, Word newValue);
+    public Word compareAndSwapWord(Offset offset, Word expectedValue, Word newValue) {
+    	throw new UnsupportedOperationException("later");
+    }
 
     /**
      * @see Accessor#compareAndSwapInt(Offset, int, int)
      */
-    public native Reference compareAndSwapReference(int offset, Reference expectedValue, Reference newValue);
+    public Reference compareAndSwapReference(int offset, Reference expectedValue, Reference newValue) {
+    	throw new UnsupportedOperationException("later");
+    }
 
     /**
      * @see Accessor#compareAndSwapInt(Offset, int, int)
      */
-    public native Reference compareAndSwapReference(Offset offset, Reference expectedValue, Reference newValue);
+    public Reference compareAndSwapReference(Offset offset, Reference expectedValue, Reference newValue) {
+    	throw new UnsupportedOperationException("later");
+    }
 
     /**
      * Sets a bit in the bit map whose base is denoted by the value of this pointer.
@@ -943,7 +856,7 @@ public abstract class Pointer extends Address implements Accessor {
                 break;
             }
             default:
-                throw FatalError.unexpected("invalid type");
+                throw new Error("invalid type");
         }
     }
 }
