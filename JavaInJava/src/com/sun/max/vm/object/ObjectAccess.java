@@ -21,7 +21,6 @@
 package com.sun.max.vm.object;
 
 import static com.sun.cri.bytecode.Bytecodes.*;
-import static com.sun.max.vm.MaxineVM.*;
 
 import java.lang.reflect.*;
 import java.nio.*;
@@ -157,21 +156,5 @@ public final class ObjectAccess {
      */
     public static Size size(Object object) {
         return Layout.size(Reference.fromJava(object));
-    }
-
-    @INTRINSIC(UNSAFE_CAST)
-    private static native ObjectAccess asThis(Object buffer);
-
-    @ALIAS(declaringClassName = "java.nio.DirectByteBuffer", name = "<init>")
-    private native void init(long addr, int capacity);
-
-    /**
-     * Creates a new instance of the package private class java.nio.DirectByteBuffer.
-     */
-    public static ByteBuffer createDirectByteBuffer(long address, int capacity) {
-        Object buffer = Heap.createTuple(DirectByteBuffer.dynamicHub());
-        asThis(buffer).init(address, capacity);
-        ByteBuffer directBuffer = (ByteBuffer) buffer;
-        return directBuffer;
     }
 }
