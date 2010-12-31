@@ -30,8 +30,8 @@ import com.sun.max.program.*;
  * @author Bernd Mathiske
  */
 public final class WithoutAccessCheck {
-    private static Field findField(Class javaClass, String fieldName) {
-        Class c = javaClass;
+    private static Field findField(Class<?> javaClass, String fieldName) {
+        Class<?> c = javaClass;
         while (c != null) {
             try {
                 final Field field = c.getDeclaredField(fieldName);
@@ -67,7 +67,7 @@ public final class WithoutAccessCheck {
         }
     }
 
-    public static Object getStaticField(Class javaClass, String fieldName) {
+    public static Object getStaticField(Class<?> javaClass, String fieldName) {
         final Field field = findField(javaClass, fieldName);
         try {
             return field.get(javaClass);
@@ -77,7 +77,7 @@ public final class WithoutAccessCheck {
         }
     }
 
-    public static void setStaticField(Class javaClass, String fieldName, Object value) {
+    public static void setStaticField(Class<?> javaClass, String fieldName, Object value) {
         final Field field = findField(javaClass, fieldName);
         try {
             field.set(javaClass, value);
@@ -88,7 +88,7 @@ public final class WithoutAccessCheck {
 
     public static Object newInstance(Class<?> javaClass) {
         try {
-            final Constructor constructor = javaClass.getDeclaredConstructor();
+            final Constructor<?> constructor = javaClass.getDeclaredConstructor();
             constructor.setAccessible(true);
             return constructor.newInstance();
         } catch (Exception e) {
@@ -99,7 +99,7 @@ public final class WithoutAccessCheck {
     /**
      * Return the named method with a method signature matching parameter classes from the given class.
      */
-    private static Method getMethod(Class<?> instanceClass, String methodName, Class[] parameterClasses)
+    private static Method getMethod(Class<?> instanceClass, String methodName, Class<?>[] parameterClasses)
         throws NoSuchMethodException {
         if (instanceClass == null) {
             throw new NoSuchMethodException("Invalid method : " + methodName);
@@ -112,7 +112,7 @@ public final class WithoutAccessCheck {
         }
     }
 
-    private static Class getWrapperClass(Class primitiveClass) {
+    private static Class<?> getWrapperClass(Class<?> primitiveClass) {
         assert primitiveClass.isPrimitive();
         String name = primitiveClass.getName();
         if (name.equals("int")) {
@@ -129,7 +129,7 @@ public final class WithoutAccessCheck {
         }
     }
 
-    private static boolean compatible(Class parameterClass, Object argument) {
+    private static boolean compatible(Class<?> parameterClass, Object argument) {
         if (parameterClass == null) {
             return false;
         }
@@ -144,7 +144,7 @@ public final class WithoutAccessCheck {
         return parameterClass.isInstance(argument);
     }
 
-    private static boolean compatible(Class[] parameterClasses, Object[] arguments) {
+    private static boolean compatible(Class<?>[] parameterClasses, Object[] arguments) {
         if (arguments == null) {
             return parameterClasses == null;
         }
@@ -162,7 +162,7 @@ public final class WithoutAccessCheck {
     /**
      * Calls a method on the given object instance with the given arguments.
      */
-    public static Object invokeVirtual(Object instance, String methodName, Class[] parameterClasses, Object[] arguments)
+    public static Object invokeVirtual(Object instance, String methodName, Class<?>[] parameterClasses, Object[] arguments)
         throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         assert compatible(parameterClasses, arguments);
         final Method method = getMethod(instance.getClass(), methodName, parameterClasses);
@@ -170,7 +170,7 @@ public final class WithoutAccessCheck {
         return method.invoke(instance, arguments);
     }
 
-    public static Object invokeStatic(Class instanceClass, String methodName, Class[] parameterClasses, Object[] arguments) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public static Object invokeStatic(Class<?> instanceClass, String methodName, Class<?>[] parameterClasses, Object[] arguments) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         assert compatible(parameterClasses, arguments);
         final Method method = getMethod(instanceClass, methodName, parameterClasses);
         method.setAccessible(true);
@@ -178,7 +178,7 @@ public final class WithoutAccessCheck {
     }
 
     public static Object invokeConstructor(Class<?> instanceClass) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        final Constructor constructor = instanceClass.getDeclaredConstructor(new Class[]{});
+        final Constructor<?> constructor = instanceClass.getDeclaredConstructor(new Class[]{});
         constructor.setAccessible(true);
         return constructor.newInstance(new Object[]{});
     }
