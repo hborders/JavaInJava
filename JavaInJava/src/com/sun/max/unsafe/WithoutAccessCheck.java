@@ -22,8 +22,6 @@ package com.sun.max.unsafe;
 
 import java.lang.reflect.*;
 
-import sun.misc.*;
-
 import com.sun.max.program.*;
 
 /**
@@ -32,11 +30,6 @@ import com.sun.max.program.*;
  * @author Bernd Mathiske
  */
 public final class WithoutAccessCheck {
-    public static final Unsafe unsafe = (Unsafe) getStaticField(Unsafe.class, "theUnsafe");
-
-    private WithoutAccessCheck() {
-    }
-
     private static Field findField(Class javaClass, String fieldName) {
         Class c = javaClass;
         while (c != null) {
