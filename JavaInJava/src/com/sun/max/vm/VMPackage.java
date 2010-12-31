@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010 Sun Microsystems, Inc.  All rights reserved.
+ * Copyright (c) 2007 Sun Microsystems, Inc.  All rights reserved.
  *
  * Sun Microsystems, Inc. has intellectual property rights relating to technology embodied in the product
  * that is described in this document. In particular, and without limitation, these intellectual property
@@ -18,21 +18,30 @@
  * UNIX is a registered trademark in the U.S. and other countries, exclusively licensed through X/Open
  * Company, Ltd.
  */
-package com.sun.cri.bytecode;
+package com.sun.max.vm;
 
-import java.lang.annotation.*;
+import com.sun.max.*;
+import com.sun.max.annotate.*;
 
 /**
- * Marks a method as being implemented by an extended bytecode.
+ * Denotes a package of classes that are (potentially) in the VM.
  *
- * @author Ben Titzer
+ * @author Bernd Mathiske
+ * @author Doug Simon
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface INTRINSIC {
+public abstract class VMPackage extends MaxPackage {
+    public VMPackage() {
+    }
+
+    public boolean isPartOfMaxineVM(VMConfiguration vmConfiguration) {
+        return true;
+    }
+
     /**
-     * The value of the extended bytecode corresponding to this intrinsic.
-     * @return the extended bytecode value
+     * Determines if this package contains any classes annotated with {@link METHOD_SUBSTITUTIONS}.
+     * @return
      */
-    int value();
+    public boolean containsMethodSubstitutions() {
+        return false;
+    }
 }
