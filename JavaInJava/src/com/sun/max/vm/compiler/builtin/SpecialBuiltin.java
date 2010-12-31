@@ -20,7 +20,7 @@
  */
 package com.sun.max.vm.compiler.builtin;
 
-import com.sun.max.unsafe.Word;
+import com.sun.max.unsafe.*;
 
 /**
  * @author Bernd Mathiske
@@ -53,5 +53,45 @@ public abstract class SpecialBuiltin {
             return -1;
         }
         return Long.numberOfTrailingZeros(l);
+    }
+
+    public static boolean aboveEqual(int value1, int value2) {
+        final long unsignedInt1 = value1 & 0xFFFFFFFFL;
+        final long unsignedInt2 = value2 & 0xFFFFFFFFL;
+        return unsignedInt1 >= unsignedInt2;
+    }
+
+    public static boolean aboveThan(int value1, int value2) {
+        final long unsignedInt1 = value1 & 0xFFFFFFFFL;
+        final long unsignedInt2 = value2 & 0xFFFFFFFFL;
+        return unsignedInt1 > unsignedInt2;
+    }
+
+    public static boolean belowEqual(int value1, int value2) {
+        final long unsignedInt1 = value1 & 0xFFFFFFFFL;
+        final long unsignedInt2 = value2 & 0xFFFFFFFFL;
+        return unsignedInt1 <= unsignedInt2;
+    }
+
+    public static boolean belowThan(int value1, int value2) {
+        final long unsignedInt1 = value1 & 0xFFFFFFFFL;
+        final long unsignedInt2 = value2 & 0xFFFFFFFFL;
+        return unsignedInt1 < unsignedInt2;
+    }
+
+    public static float intToFloat(int value) {
+        return Float.intBitsToFloat(value);
+    }
+
+    public static int floatToInt(float value) {
+        return Float.floatToRawIntBits(value);
+    }
+
+    public static double longToDouble(long value) {
+        return Double.longBitsToDouble(value);
+    }
+
+    public static long doubleToLong(double value) {
+        return Double.doubleToRawLongBits(value);
     }
 }
